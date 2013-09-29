@@ -123,3 +123,66 @@ vector<vector<size_t>> scc_tarjan(graph_t& graph)
  *          save scc;
  */
 
+struct graph_gabow_t {
+    char square[MAX_SIZE][MAX_SIZE];
+    size_t size;
+};
+
+class Gabow {
+public:
+    Gabow()
+    {
+        _cur_idx = 0;
+        for (size_t idx = 0; idx < MAX_SIZE; ++idx) {
+            _scc_num[idx] = 0;
+            _index[idx] = 0;
+            _cur_scc_num = 0;
+        }
+    }
+    vector<size_t> _path;
+    vector<size_t> _s;
+    char _cur_idx;
+    char _scc_num[MAX_SIZE];
+    char _index[MAX_SIZE];
+    size_t _cur_scc_num;
+};
+
+void func_gabow(graph_gabow_t& graph, Gabow& tk, size_t idx)
+{
+    tk._cur_idx++;
+    tk._index[idx] = tk._cur_idx;
+    tk._path.push_back(idx);
+    tk._s.push_back(idx);
+    for (int next = 0; next < graph.size; ++next) {
+        if (graph.square[idx][next] == 0) {
+            continue;
+        }
+        if (tk._index[next] == 0) {
+            func_gabow(graph, tk, next);
+        } else if (tk._scc_num[idx] == 0) {
+            size_t cur = 0;
+            do {
+                cur = tk._s.back();
+                tk._s.pop_back();
+            } while (ts._index[idx] < ts._index[cur]);
+        }
+    }
+    if (tk._s.back() != idx) {
+        return;
+    }
+    tk._s.pop_back();
+    tk._cur_scc_num++;
+    while (tk._path.back() != tk._s.back()) {
+        tk._scc_num[tk._path.back()] = tk._cur_scc_num;
+        tk._path.pop_back();
+    }
+}
+
+void scc_gabow(graph_gabow_t& graph, Gabow tk)
+{
+    for (size_t idx = 0; idx < graph.size; ++idx) {
+        if (tk._index[idx] == 0) {
+            func_gabow(idx);
+        }
+    }
+}
